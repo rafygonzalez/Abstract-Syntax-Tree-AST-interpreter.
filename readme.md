@@ -12,6 +12,8 @@ There are several classes for different kinds of expressions and statements, inc
 - VariableDeclarator: Defines a variable and its initial value
 - VariableDeclaration: Groups together variable declarators
 - UpdateExpression: Updates a variable by incrementing or decrementing its value
+- IfStatement: Represents a conditional statement that evaluates an expression and executes a block of code if the expression is true.
+- BlockStatement: Groups together a sequence of statements as a single statement.
 
 # Compile With: 
 
