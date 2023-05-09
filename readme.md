@@ -22,3 +22,5 @@ g++ -I/Users/rafaelgonzalez/vcpkg/installed/arm64-osx/include -o interpreter mai
 ./interpreter ast_files/binary_expressions.json
 
 ./interpreter ast_files/update_expressions.json
+
+./interpreter ast_files/if_statement.json 
