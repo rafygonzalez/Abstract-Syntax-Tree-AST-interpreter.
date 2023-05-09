@@ -40,6 +40,10 @@ unique_ptr<ASTNode> parseAST(const json &ast)
         {
             op = TokenType::Divide;
         }
+        else if (ast["operator"] == "==")
+        {
+            op = TokenType::EqualEqual;
+        }
         else
         {
             cerr << "Error: unsupported operator " << ast["operator"] << endl;
@@ -95,6 +99,29 @@ unique_ptr<ASTNode> parseAST(const json &ast)
         }
         auto updateExpr = make_unique<UpdateExpression>(op, move(argument));
         return updateExpr;
+    }
+    else if (type == "BlockStatement")
+    {
+        auto blockStmt = make_unique<BlockStatement>();
+        for (auto &statement : ast["body"])
+        {
+            blockStmt->addStatement(parseAST(statement));
+        }
+        return blockStmt;
+    }
+    else if (type == "IfStatement")
+    {
+        auto test = parseAST(ast["test"]);
+        auto consequent = parseAST(ast["consequent"]);
+        auto ifStmt = make_unique<IfStatement>(move(test), move(consequent));
+
+        if (ast.find("alternate") != ast.end() && !ast["alternate"].is_null())
+        {
+            auto alternate = parseAST(ast["alternate"]);
+            ifStmt->setAlternate(move(alternate));
+        }
+
+        return ifStmt;
     }
     else
     {
