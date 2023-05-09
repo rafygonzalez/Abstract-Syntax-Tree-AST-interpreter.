@@ -9,6 +9,8 @@ enum class TokenType
     Multiply,
     Divide,
     Number,
+    PlusPlus,
+    MinusMinus
 };
 
 class Token
@@ -64,8 +66,50 @@ public:
     }
 };
 
+class Identifier : public ASTNode
+{
+public:
+    string name;
+
+    Identifier(string name) : name(name) {}
+};
+
+class VariableDeclarator : public ASTNode
+{
+public:
+    unique_ptr<ASTNode> id;
+    unique_ptr<ASTNode> init;
+
+    VariableDeclarator(unique_ptr<ASTNode> id, unique_ptr<ASTNode> init)
+        : id(move(id)), init(move(init)) {}
+};
+
+class VariableDeclaration : public ASTNode
+{
+public:
+    vector<unique_ptr<ASTNode>> declarations;
+
+    void addDeclaration(unique_ptr<ASTNode> declaration)
+    {
+        declarations.push_back(move(declaration));
+    }
+
+};
+
+class UpdateExpression : public ASTNode
+{
+public:
+    TokenType op;
+    unique_ptr<ASTNode> argument;
+
+    UpdateExpression(TokenType op, unique_ptr<ASTNode> argument)
+        : op(op), argument(move(argument)) {}
+};
+
 class ASTInterpreter
 {
+private:
+    unordered_map<string, float> varMap;
 public:
     float evaluate(ASTNode &node)
     {
@@ -101,6 +145,29 @@ public:
                 result = evaluate(*statement);
             }
             return result;
+        }
+        else if (auto varDecl = dynamic_cast<VariableDeclaration*>(&node)) {
+            for (auto& declarator : varDecl->declarations) {
+                evaluate(*declarator);
+            }
+            return 0;
+        } else if (auto varDeclr = dynamic_cast<VariableDeclarator*>(&node)) {
+            float initValue = evaluate(*varDeclr->init);
+            varMap[static_cast<Identifier *>(varDeclr->id.get())->name] = initValue;
+            
+            return initValue;
+        } else if (auto identifier = dynamic_cast<Identifier*>(&node)) {
+            return varMap[identifier->name];
+        } else if (auto updateExpr = dynamic_cast<UpdateExpression*>(&node)) {
+            float value = evaluate(*updateExpr->argument);
+           if (updateExpr->op == TokenType::PlusPlus){
+                varMap[static_cast<Identifier *>(updateExpr->argument.get())->name] = value + 1;
+                
+                return value + 1;
+            } else if (updateExpr->op == TokenType::MinusMinus) {
+                varMap[static_cast<Identifier *>(updateExpr->argument.get())->name] = value - 1;
+                return value - 1;
+            }
         }
         return 0;
     }
