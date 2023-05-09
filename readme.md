@@ -2,7 +2,7 @@ This is C++ code that defines a simple interpreter for an abstract syntax tree (
 
 The code defines a few different classes that represent nodes in the AST. Each node class inherits from the ASTNode base class, which has a virtual destructor.
 
-There are several classes for different kinds of expressions and statements, including:
+# Completed
 
 - BinaryExpression: Represents an expression with a binary operator (e.g. 1 + 2)
 - Literal: Represents a literal value (e.g. 42)
@@ -14,6 +14,22 @@ There are several classes for different kinds of expressions and statements, inc
 - UpdateExpression: Updates a variable by incrementing or decrementing its value
 - IfStatement: Represents a conditional statement that evaluates an expression and executes a block of code if the expression is true.
 - BlockStatement: Groups together a sequence of statements as a single statement.
+
+# TODO
+
+- UnaryExpression.
+- ForStatement.
+- VariableAssignment.
+- WhileStatement.
+- SwitchStatement
+- CallExpression
+- FunctionDeclaration
+- FunctionExpression
+- ReturnStatement
+- ArrayExpression
+- ObjectExpression
+- MemberExpression
+- LogicalExpression
 
 # Compile With: 
 
