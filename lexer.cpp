@@ -47,8 +47,6 @@ unordered_map<char, TokenType> operators = {
     // Add more operators as needed
 };
 
-
-
 // Map of JavaScript punctuation symbols
 unordered_map<char, TokenType> punctuation = {
     {',', TokenType::PUNCTUATION},
@@ -97,22 +95,48 @@ std::vector<Token> lex(std::string input)
             i--;
             tokens.push_back({TokenType::LITERAL, value});
         }
-        else if (is_alpha(c))
+        else if (is_alpha(c) || c == '_')
         {
-            // Parse identifier or keyword
+            // Parse identifier, keyword, or string literal
             std::string value;
-            while (i < input.size() && (is_alpha(input[i]) || is_digit(input[i])))
+            bool is_string_literal = false;
+            if (c == '"')
             {
-                value += input[i++];
-            }
-            i--;
-            if (keywords.count(value))
-            {
-                tokens.push_back({keywords[value], value});
+                // Parse string literal
+                is_string_literal = true;
+                value += c;
+                while (i + 1 < input.size() && input[i + 1] != '"')
+                {
+                    value += input[++i];
+                }
+                if (i + 1 == input.size())
+                {
+                    // Error: unclosed string literal
+                    std::cerr << "Error: unclosed string literal" << std::endl;
+                    exit(1);
+                }
+                value += input[++i];
             }
             else
             {
-                tokens.push_back({TokenType::IDENTIFIER, value});
+                // Parse identifier or keyword
+                while (i < input.size() && (is_alpha(input[i]) || is_digit(input[i]) || input[i] == '_'))
+                {
+                    value += input[i++];
+                }
+                i--;
+                if (keywords.count(value))
+                {
+                    tokens.push_back({keywords[value], value});
+                }
+                else
+                {
+                    tokens.push_back({TokenType::IDENTIFIER, value});
+                }
+            }
+            if (is_string_literal)
+            {
+                tokens.push_back({TokenType::LITERAL, value});
             }
         }
         else if (operators.count(c))
@@ -131,6 +155,21 @@ std::vector<Token> lex(std::string input)
             // Parse punctuation symbol
             tokens.push_back({punctuation[c], std::string(1, c)});
         }
+        else if (c == '"')
+        {
+            // Parse string literal
+            std::string value;
+            i++;
+            while (i < input.size() && input[i] != '"')
+            {
+                value += input[i++];
+            }
+            if (i < input.size())
+            {
+                tokens.push_back({TokenType::LITERAL, value});
+                i++;
+            }
+        }
         else
         {
             // Error: unknown character
@@ -138,35 +177,35 @@ std::vector<Token> lex(std::string input)
             exit(1);
         }
     }
-    
+
     return tokens;
 }
 
 int main()
 {
-    std::string input = "if (x < 5)\n {\n return x * 2;\n }";
+    std::string input = "let test = \"Hi\"; \nif (x < 5)\n {\n return x * 2;\n }";
     std::vector<Token> tokens = lex(input);
 
-    for (const Token& token : tokens)
+    for (const Token &token : tokens)
     {
         std::cout << "Token { type = ";
         switch (token.type)
         {
-            case TokenType::IDENTIFIER:
-                std::cout << "IDENTIFIER";
-                break;
-            case TokenType::KEYWORD:
-                std::cout << "KEYWORD";
-                break;
-            case TokenType::LITERAL:
-                std::cout << "LITERAL";
-                break;
-            case TokenType::OPERATOR:
-                std::cout << "OPERATOR";
-                break;
-            case TokenType::PUNCTUATION:
-                std::cout << "PUNCTUATION";
-                break;
+        case TokenType::IDENTIFIER:
+            std::cout << "IDENTIFIER";
+            break;
+        case TokenType::KEYWORD:
+            std::cout << "KEYWORD";
+            break;
+        case TokenType::LITERAL:
+            std::cout << "LITERAL";
+            break;
+        case TokenType::OPERATOR:
+            std::cout << "OPERATOR";
+            break;
+        case TokenType::PUNCTUATION:
+            std::cout << "PUNCTUATION";
+            break;
         }
         std::cout << ", value = \"" << token.value << "\" }" << std::endl;
     }
