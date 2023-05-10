@@ -1,8 +1,5 @@
 #include <string>
 #include <vector>
-#include <map>
-#include <cctype>
-#include <cstdlib>
 #include <unordered_map>
 using namespace std;
 // Token types
@@ -166,16 +163,38 @@ std::vector<Token> lex(std::string input)
         {
             // Parse string literal
             std::string value;
-            i++;
-            while (i < input.size() && input[i] != '"')
+            value += c;
+            while (i + 1 < input.size() && input[i + 1] != '"')
             {
-                value += input[i++];
+                // Handle escape sequences
+                if (input[i + 1] == '\\')
+                {
+                    value += input[i + 1];
+                    if (i + 2 < input.size())
+                    {
+                        value += input[i + 2];
+                        i += 2;
+                    }
+                    else
+                    {
+                        // Error: invalid escape sequence
+                        std::cerr << "Error: invalid escape sequence" << std::endl;
+                        exit(1);
+                    }
+                }
+                else
+                {
+                    value += input[++i];
+                }
             }
-            if (i < input.size())
+            if (i + 1 == input.size())
             {
-                tokens.push_back({TokenType::LITERAL, value});
-                i++;
+                // Error: unclosed string literal
+                std::cerr << "Error: unclosed string literal" << std::endl;
+                exit(1);
             }
+            value += input[++i];
+            tokens.push_back({TokenType::LITERAL, value});
         }
         else
         {
