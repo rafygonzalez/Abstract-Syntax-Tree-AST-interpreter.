@@ -31,9 +31,14 @@ The code defines a few different classes that represent nodes in the AST. Each n
 - MemberExpression
 - LogicalExpression
 
-# Compile With: 
+# Compile Interpreter With: 
 
 g++ -I/Users/rafaelgonzalez/vcpkg/installed/arm64-osx/include -o interpreter main.cpp -std=c++17
+
+# Compile Lexer With: 
+
+g++ -o lexer lexer.cpp -std=c++17
+
 
 # Run with:
 

@@ -1,10 +1,10 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 
-#include "lib/parserAST.hpp"
+#include "lib/JSONParser.hpp"
 
 using namespace std;
-using json = nlohmann::json;
+
 
 int main(int argc, char **argv)
 {
