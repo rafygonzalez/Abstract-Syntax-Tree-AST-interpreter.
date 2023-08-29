@@ -1,9 +1,15 @@
 #include <iostream>
 #include "lib/lexer.hpp"
+#include <iostream>
 
-int main()
-{
-    std::string input = "let test = \"Hi\"; \nif (x < 5)\n {\n return x * 2;\n }";
+int main() {
+    std::string input = "let x = 5;\n"
+                        "let y = x * 2;\n"
+                        "function add(a, b) {\n"
+                        "  return a + b;\n"
+                        "}\n"
+                        "let z = add(x, y);";
+
     std::vector<Token> tokens = lex(input);
 
     for (const Token &token : tokens)
@@ -29,6 +35,10 @@ int main()
         }
         std::cout << ", value = \"" << token.value << "\" }" << std::endl;
     }
+    
+    Parser parser(tokens);
+    AstNodePtr ast = parser.parse();
+
 
     return 0;
 }
